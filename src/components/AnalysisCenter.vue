@@ -1,7 +1,18 @@
 <template>
   <div class="container">
+    <div class="user_avatar">
+      <img
+        class="avatar"
+        :src="`http://localhost:8080/common/download?name=` + user.avatar"
+        alt=""
+        @click="$router.push('/personal')"
+      />
+    </div>
     <div class="navBar">
-
+      <div class="navigation" @click="$router.push('/home')">
+        <div style="font-size: 18px">Home</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
+      </div>
       <div class="navigation" @click="$router.push('/editDiary')">
         <div style="font-size: 17px">Anything&nbsp;to&nbsp;talk&nbsp;to&nbsp;us?</div>
         <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
@@ -34,8 +45,10 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 export default {
   name: "AnalysisCenter",
+  
   data() {
     return {
       summary: "12312312jkhdvclkshfnasd",
@@ -43,6 +56,9 @@ export default {
       pieChart: {},
       circleChart: {},
     };
+  },
+  computed: {
+    ...mapState(["user"]),
   },
   methods: {
     drawChart(p, n) {
@@ -82,8 +98,8 @@ export default {
               show: false,
             },
             data: [
-              { value: p, name: "positive" },
-              { value: n, name: "negative" },
+              { value: Math.floor(p), name: "positive" },
+              { value: Math.floor(n), name: "negative" },
             ],
           },
         ],
@@ -174,6 +190,18 @@ export default {
 .navigation:hover {
   cursor: pointer;
 }
+.user_avatar {
+  position: absolute;
+  left: calc(92% - 2px);
+  top: calc(4% + 2px);
+}
+.avatar {
+  height:80px;
+  width: 80px;
+  /* border: #333 1px solid; */
+  border-radius: 50%;
+  cursor: pointer;
+}
 #piechart {
   width: 350px;
   height: 250px;
@@ -232,7 +260,7 @@ textarea {
   width: 450px;
   /* border: 1px saddlebrown solid; */
   margin-left: 60px;
-  font-size: 23px;
+  font-size: 21px;
   font-family: 'Microsoft YaHei';
   font-weight: normal;
 }

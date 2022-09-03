@@ -16,8 +16,19 @@
         </linearGradient>
       </defs>
     </svg>
+    <div class="user_avatar">
+      <img
+        class="avatar"
+        :src="`http://localhost:8080/common/download?name=` + user.avatar"
+        alt=""
+        @click="$router.push('/personal')"
+      />
+    </div>
     <div class="navBar">
-
+      <div class="navigation" @click="$router.push('/home')">
+        <div style="font-size: 18px">Home</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
+      </div>
       <div class="navigation" @click="$router.push('/editDiary')">
         <div style="font-size: 18px">Anything&nbsp;to&nbsp;talk&nbsp;to&nbsp;us?</div>
         <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
@@ -29,7 +40,7 @@
 
       
       <div class="navigation" @click="$router.push('/analysisCenter')">
-        <div style="font-size: 18px">Analysis&nabla;for&nbsp;me</div>
+        <div style="font-size: 18px">Analysis&nbsp;for&nbsp;me</div>
         <!-- <div style="font-size: 25px; margin-top: -10px">Analyze</div> -->
       </div>
       <div class="navigation" @click="$router.push('/chatList/{}/{}')">
@@ -48,8 +59,8 @@
         <div class="splitBox"></div>
         <div class="title">
           <div class="titleBox">
-            <!-- {{ diary.title }} -->
-            1111111111111111111111
+            {{ diary.title }}
+            <!-- 1111111111111111111111 -->
           </div>
         </div>
       </div>
@@ -87,10 +98,10 @@
     <div class="analysisBox" :class="{ analysisBox2: analysisOpen }">
       <div class="barBox">
         <div class="bar" :style="{ height: (diary.mood / 10) * 300 + 'px' }">
-          <div class="num">{{ diary.mood * 10 }}%</div>
+          <div class="num">{{ Math.floor(diary.mood * 10) }}%</div>
         </div>
         <div class="bar" :style="{ height: ((10 - diary.mood) / 10) * 300 + 'px' }">
-          <div class="num">{{ (10 - diary.mood) * 10 }}%</div>
+          <div class="num">{{ Math.floor((10 - diary.mood) * 10) }}%</div>
         </div>
       </div>
       <div class="tagBox">
@@ -111,13 +122,18 @@
         asdasdawdawdsadawdsadawdsadaswda
       </textarea>
     </div>
-    <div class="addDiary">
+    <div class="addDiary" @click="$router.push('/editDiary')">
       <div class="addText">+add&nbsp;new</div>
     </div>
+    <div class="back" @click="analysisOpen = false" v-show="analysisOpen === true">
+      <div><i class="el-icon-back"></i>back</div>
+    </div>
+    <div class="viewSimilar" @click="goSimilar"><div>The Most Similar Day</div></div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex';
 // import axios from "axios";
 export default {
   name: "DiaryDetail",
@@ -134,6 +150,19 @@ export default {
     };
   },
   methods:{
+    goSimilar(){
+      this.$http({
+        method: "get",
+        url: "/diary/getSimilar/" + this.diary.id,
+      }).then(
+        res => {
+          if(res.data.code === 1){
+            console.log(res.data.data);
+            // this.$router.push("/diary/" + JSON.stringify(res.data.data))
+            this.diary = res.data.data
+          }
+      })
+    },
     goChat(){
       //get the other diary and userid, send a empty message and jump to the chatList
       this.$http({
@@ -162,54 +191,114 @@ export default {
       }else{
         return "you are not happy recently, We need to find out the reasons for our bad mood and not allow it to develop. Do some exercise, go for a walk or do physical exercise, write down ten things you can do, and then follow the list to overcome your body's inertia. Record your thoughts and feelings. In case you realize the cause of depression and annoyance, you can record it and turn it over from time.";
       }
-    }
+    },
+    ...mapState(['user']),
   },
   created() {
     this.diary = JSON.parse(this.$route.params.diaryStr);
   },
-  // beforeMount() {
-  //   if (!("positive" in this.diary)) {
-  //     let content = this.diary.content;
-  //     let contentArr = content.split("。");
-  //     console.log("contentArr:", contentArr);
-  //     console.log("fetch emotion rate...");
-  //     //   this.diary.positive = 0;
-  //     //   this.diary.negative = 0;
-  //     this.$set(this.diary, "positive", 0);
-  //     this.$set(this.diary, "negative", 0);
-  //     let that = this;
-  //     let string;
-  //     for (string in contentArr) {
-  //       axios({
-  //         method: "post",
-  //         url: "http://localhost:8888/ai/tasks",
-  //         data: {
-  //           text: contentArr[string],
-  //         },
-  //       }).then((res) => {
-  //         console.log(res.data.data);
-  //         if (res.data.message === "OK") {
-  //           if (res.data.data.return === 1) {
-  //             console.log("111111", this.diary.positive);
-  //             that.diary.positive += 1;
-  //           } else {
-  //             that.diary.negative++;
-  //           }
-  //         }
-  //       });
-  //     }
-  //   }
-  // },
+  beforeMount() {
+    if ((this.diary.mood === null)) {
+      let content = this.diary.content;
+      let contentArr = content.split("。");
+      console.log("contentArr:", contentArr);
+      console.log("fetch emotion rate...");
+      //   this.diary.positive = 0;
+      //   this.diary.negative = 0;
+      this.$set(this.diary, "positive", 0);
+      this.$set(this.diary, "negative", 0);
+      let that = this;
+      let string;
+      for (string in contentArr) {
+        this.$http({
+          method: "post",
+          url: "http://localhost:8888/ai/tasks",
+          data: {
+            text: contentArr[string],
+          },
+        }).then((res) => {
+          console.log(res.data.data);
+          if (res.data.message === "OK") {
+            if (res.data.data.return === 1) {
+              console.log("111111", this.diary.positive);
+              that.diary.positive += 1;
+            } else {
+              that.diary.negative++;
+            }
+          }
+          console.log("string: ",string, "/contentArr.length:", contentArr.length);
+          if (string == (contentArr.length - 1)){
+            console.log("before send to save ... this.diary.positive:", that.diary.positive, "/this.diary.negative:", that.diary.negative);
+            that.diary.mood = that.diary.positive*10 / (that.diary.negative + that.diary.positive);
+            that.$http({
+              method: "put",
+              url: "/diary",
+              data: that.diary,
+            })
+
+          }
+        });
+      }
+    }
+  },
+  mounted(){
+    // this.$forceUpdate();
+  },
+  beforeDestroy(){
+    console.log("destroy");
+  }
 };
 </script>
 
 <style scoped>
 .container {
+  position:relative;
   width: 100%;
   height: 100%;
   /* background: url("../assets/diaryDetail.png") no-repeat; */
   background: url("../assets/diaryDetail.jpg") no-repeat;
   background-size: 100% 100%;
+  overflow-y: hidden;
+}
+.viewSimilar{
+  position: absolute;
+  top: 81%;
+  left: 25%;
+  border-radius: 5px;
+  /* background: #000; */
+  border: 1px saddlebrown solid;
+  height: 40px;
+  width: 220px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  background: rgb(128, 84, 151);
+  transition: all 0.3s;
+  box-shadow: 2px 2px 4px rgb(99, 99, 99);
+}
+.viewSimilar:hover{
+  width: 250px;
+  height: 50px;
+  font-size: 21px;
+}
+.back{
+  height: 50px;
+  width: 110px;
+  text-align: center;
+  font-size: 25px;
+  /* border: #000 1px solid; */
+  position: absolute;
+  top: 72%;
+  left: 31%;
+  border-radius: 10px;
+  color: white;
+  background: rgb(152, 217, 236);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 textarea {
   outline: none;
@@ -233,6 +322,18 @@ textarea {
   margin-left: 10px;
 }
 .navigation:hover {
+  cursor: pointer;
+}
+.user_avatar {
+  position: absolute;
+  left: calc(92% - 2px);
+  top: calc(4% + 2px);
+}
+.avatar {
+  height:80px;
+  width: 80px;
+  /* border: #333 1px solid; */
+  border-radius: 50%;
   cursor: pointer;
 }
 .textBox {
@@ -490,14 +591,10 @@ textarea {
   align-items: center;
   flex-direction: column;
   border-radius: 5px;
+  transition: all 0.3s;
 }
 .addDiary:hover {
-  animation: pullup 0.5s forwards;
-}
-@keyframes pullup {
-  to {
-    transform: translateY(-30px);
-  }
+  transform: translateY(-30px);
 }
 .addText {
   margin-top: 0px;
@@ -515,6 +612,7 @@ textarea {
   flex-direction: column;
   justify-content: center;
   transition: width 0.5s, opacity 0.5s;
+  box-shadow: 5px 5px 10px rgb(99, 99, 99);
 }
 .goChat:hover {
   width: 300px;

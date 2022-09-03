@@ -1,5 +1,29 @@
 <template>
   <div class="container">
+    <div class="navBar">
+      <div class="navigation" @click="$router.push('/home')">
+        <div style="font-size: 18px">Home</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
+      </div>
+      <div class="navigation" @click="$router.push('/editDiary')">
+        <div style="font-size: 18px">Anything&nbsp;to&nbsp;talk&nbsp;to&nbsp;us?</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
+      </div>
+      <div class="navigation" @click="$router.push('/myDiary')">
+        <div style="font-size: 18px">My&nbsp;daily&nbsp;journeys</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
+      </div>
+
+      
+      <div class="navigation" @click="$router.push('/analysisCenter')">
+        <div style="font-size: 18px">Analysis&nbsp;for&nbsp;me</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Analyze</div> -->
+      </div>
+      <div class="navigation" @click="$router.push('/chatList/{}/{}')">
+        <div style="font-size: 18px">Let's&nbsp;Chat</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Chat</div> -->
+      </div>
+    </div>
     <div class="user_avatar">
       <img
         class="avatar"
@@ -21,6 +45,7 @@
         :on-change="handleChange"
         :file-list="fileList"
         :auto-upload="false"
+        :headers="headers"
       >
         <el-button slot="trigger" size="small" type="primary" class="selBtn"
           >选择图片</el-button
@@ -42,9 +67,9 @@
       </el-upload>
     </div>
     <div class="infoBox">
-      <div class="signature" v-if="edit !== 1">
+      <!-- <div class="signature" v-if="edit !== 1">
         个性签名: <input type="text" v-model="user.signature" />
-      </div>
+      </div> -->
       <div class="signature" v-if="edit !== 1">
         手机号: <input type="text" v-model="user.phone" />
       </div>
@@ -66,7 +91,12 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "EditProfile",
   computed: {
-    ...mapState(["user"]),
+    ...mapState(["user", "access_token"]),
+    headers(){
+      return {
+        Authorization: "Bearer " + this.access_token
+      }
+    }
   },
   data() {
     return {
@@ -187,13 +217,34 @@ export default {
   width: 100%;
   height: 100%;
   /* background-color: rgb(48, 48, 48); */
-  background: url("../assets/personal.png") no-repeat;
+  background: url("../assets/personal.jpg") no-repeat;
   background-size: 100% 100%;
+}
+.navBar {
+  /* visibility: hidden  ; */
+  position: absolute;
+  left: 35.5%;
+  top: 4.4%;
+  height: 30px;
+  /* width: 500px; */
+  display: flex;
+  font-weight: bold;
+  color: rgb(79, 73, 121);
+  /* border: 1px solid saddlebrown; */
+}
+.navigation {
+  background: rgb(255, 255, 255,0);
+  /* border: 1px solid rgb(55, 47, 42); */
+  /* width: 150px; */
+  margin-left: 10px;
+}
+.navigation:hover {
+  cursor: pointer;
 }
 .user_avatar {
   position: relative;
-  left: calc(50% - 60px);
-  top: 5.5%;
+  left: calc(50% - 75px);
+  top: 14%;
 }
 .avatar {
   height: 120px;
@@ -278,7 +329,7 @@ input {
 .uploadBox {
   position: relative;
   left: 26.8%;
-  top: 80px;
+  top: 120px;
   width: 33%;
   /* border: 1px saddlebrown solid; */
   display: flex;

@@ -1,7 +1,18 @@
 <template>
   <div class="container">
-    
+    <div class="user_avatar">
+      <img
+        class="avatar"
+        :src="`http://localhost:8080/common/download?name=` + user.avatar"
+        alt=""
+        @click="$router.push('/personal')"
+      />
+    </div>
     <div class="navBar">
+      <div class="navigation" @click="$router.push('/home')">
+        <div style="font-size: 18px">Home</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
+      </div>
       <div class="navigation" @click="$router.push('/editDiary')">
         <div style="font-size: 17px">
           Anything&nbsp;to&nbsp;talk&nbsp;to&nbsp;us?
@@ -14,7 +25,7 @@
       </div>
 
       <div class="navigation" @click="$router.push('/analysisCenter')">
-        <div style="font-size: 17px">Analysis&nabla;for&nbsp;me</div>
+        <div style="font-size: 17px">Analysis&nbsp;for&nbsp;me</div>
         <!-- <div style="font-size: 25px; margin-top: -10px">Analyze</div> -->
       </div>
       <div class="navigation" @click="$router.push('/chatList/{}/{}')">
@@ -47,7 +58,7 @@
         </div>
       </div>
     </div>
-    <div class="addDiary">
+    <div class="addDiary" @click="$router.push('/editDiary')">
       <div class="addText">+add&nbsp;new</div>
     </div>
   </div>
@@ -97,10 +108,12 @@ export default {
 
 <style scoped>
 .container {
+  position:relative;
+  overflow: hidden;
   width: 100%;
   height: 100%;
   background-color: rgb(255, 255, 255);
-  background: url("../assets/diaryList.jpg") no-repeat;
+  background: url("../assets/diaryDetail.jpg") no-repeat;
   background-size: 100% 100%;
   /* display: flex; */
   /* justify-content: center; */
@@ -129,8 +142,8 @@ export default {
 }
 .user_avatar {
   position: absolute;
-  left: calc(93% - 2px);
-  top: calc(5% + 2px);
+  left: calc(94% - 2px);
+  top: calc(2% + 2px);
 }
 .avatar {
   height: 80px;
@@ -254,15 +267,12 @@ a {
   align-items: center;
   flex-direction: column;
   border-radius: 5px;
+  transition: all 0.3s;
 }
 .addDiary:hover {
-  animation: pullup 0.5s forwards;
+  transform: translateY(-30px);
 }
-@keyframes pullup {
-  to {
-    transform: translateY(-30px);
-  }
-}
+
 .addText {
   margin-top: 0px;
 }

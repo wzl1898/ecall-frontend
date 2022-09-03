@@ -23,21 +23,18 @@ button{
     width: 295px;
     position: absolute;
     left: 77%;
-    top: 66%;
+    top: 66.1%;
     border-radius: 60px;
     outline: none;
-    background: rgb(27, 27, 27, 0.3);
+    background: rgb(27, 27, 27);
     color: white;
     border: 1.5px solid white;
     font-size: 50px;
     font-weight: 900;
+    transition: all 0.3s;
 }
 button:hover{
-  animation: dark 0.5s forwards;
+  background-color: rgb(139, 174, 171);
 }
-@keyframes dark {
-  to {
-    background: rgb(48, 48, 48);
-  }
-}
+
 </style>

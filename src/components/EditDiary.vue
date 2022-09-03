@@ -1,7 +1,18 @@
 <template>
   <div class="container">
+    <div class="user_avatar">
+      <img
+        class="avatar"
+        :src="`http://localhost:8080/common/download?name=` + user.avatar"
+        alt=""
+        @click="$router.push('/personal')"
+      />
+    </div>
     <div class="navBar">
-
+      <div class="navigation" @click="$router.push('/home')">
+        <div style="font-size: 18px">Home</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
+      </div>
       <div class="navigation" @click="$router.push('/editDiary')">
         <div style="font-size: 17px">Anything&nbsp;to&nbsp;talk&nbsp;to&nbsp;us?</div>
         <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
@@ -13,7 +24,7 @@
 
       
       <div class="navigation" @click="$router.push('/analysisCenter')">
-        <div style="font-size: 17px">Analysis&nabla;for&nbsp;me</div>
+        <div style="font-size: 17px">Analysis&nbsp;for&nbsp;me</div>
         <!-- <div style="font-size: 25px; margin-top: -10px">Analyze</div> -->
       </div>
       <div class="navigation" @click="$router.push('/chatList/{}/{}')">
@@ -79,6 +90,18 @@ export default {
   width: 100%;
   background: url("../assets/editDiary (2).jpg") no-repeat;
   background-size: 100% 100%;
+}
+.user_avatar {
+  position: absolute;
+  left: calc(92% - 2px);
+  top: calc(4% + 2px);
+}
+.avatar {
+  height:80px;
+  width: 80px;
+  /* border: #333 1px solid; */
+  border-radius: 50%;
+  cursor: pointer;
 }
 .navBar {
   /* visibility: hidden  ; */

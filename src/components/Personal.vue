@@ -1,5 +1,29 @@
 <template>
   <div class="container">
+    <div class="navBar">
+      <div class="navigation" @click="$router.push('/home')">
+        <div style="font-size: 18px">Home</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
+      </div>
+      <div class="navigation" @click="$router.push('/editDiary')">
+        <div style="font-size: 18px">Anything&nbsp;to&nbsp;talk&nbsp;to&nbsp;us?</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
+      </div>
+      <div class="navigation" @click="$router.push('/myDiary')">
+        <div style="font-size: 18px">My&nbsp;daily&nbsp;journeys</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
+      </div>
+
+      
+      <div class="navigation" @click="$router.push('/analysisCenter')">
+        <div style="font-size: 18px">Analysis&nbsp;for&nbsp;me</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Analyze</div> -->
+      </div>
+      <div class="navigation" @click="$router.push('/chatList/{}/{}')">
+        <div style="font-size: 18px">Let's&nbsp;Chat</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Chat</div> -->
+      </div>
+    </div>
     <div class="user_avatar">
       <img
         class="avatar"
@@ -8,16 +32,16 @@
         @click="$router.push('/personal')"
       />
     </div>
-    <div class="editBox" @click="startEdit"></div>
+    <div class="editBox"><i @click="startEdit" class="el-icon-edit"></i></div>
     <div class="infoBox">
       <div class="account" v-if="edit !== 1">账号: {{ user.id }}</div>
-      <div class="username" v-if="edit !== 1">用户名: {{ user.name }}</div>
-      <div class="signature" v-if="edit !== 1">个性签名: hello, world!</div>
+      <div class="username" v-if="edit !== 1">用户名: {{ user.username }}</div>
+      <!-- <div class="signature" v-if="edit !== 1">个性签名: {{ user.signature }} </div> -->
       <div class="signature" v-if="edit !== 1">手机号: {{ user.phone }}</div>
       <div class="signature" v-if="edit !== 1">性别: {{ user.sex === "1" ? "男" : "女" }}</div>
-      <div class="diaryInfo">一共写了xx篇日记</div>
+      <!-- <div class="diaryInfo">一共写了xx篇日记</div> -->
     </div>
-    <div class="backBox" @click="goHome"></div>
+    <!-- <div class="backBox" @click="goHome"></div> -->
   </div>
 </template>
 
@@ -52,13 +76,35 @@ export default {
   width: 100%;
   height: 100%;
   /* background-color: rgb(48, 48, 48); */
-  background: url("../assets/personal.png") no-repeat;
+  background: url("../assets/personal.jpg") no-repeat;
   background-size: 100% 100%;
+}
+.navBar {
+  /* visibility: hidden  ; */
+  position: absolute;
+  left: 35.5%;
+  top: 4.4%;
+  height: 30px;
+  /* width: 500px; */
+  display: flex;
+  font-weight: bold;
+  color: rgb(79, 73, 121);
+  /* border: 1px solid saddlebrown; */
+}
+.navigation {
+  background: rgb(255, 255, 255,0);
+  /* border: 1px solid rgb(55, 47, 42); */
+  /* width: 150px; */
+  margin-left: 10px;
+}
+.navigation:hover {
+  cursor: pointer;
 }
 .user_avatar {
   position: relative;
-  left: calc(50% - 60px);
-  top: 5.5%;
+  left: calc(50% - 75px);
+  top: 13%;
+  /* border: 1px saddlebrown solid; */
 }
 .avatar {
   height: 120px;
@@ -69,12 +115,13 @@ export default {
 }
 .editBox {
   position: absolute;
-  top: 16%;
+  top: 25%;
   left: 71.5%;
   height: 40px;
   width: 40px;
   cursor: pointer;
   /* border:1px saddlebrown solid; */
+  font-size: 30px;
 }
 .infoBox {
   position: relative;
@@ -107,7 +154,7 @@ export default {
   height: 40px;
   width: 160px;
   cursor: pointer;
-  /* border:1px rgb(38, 36, 34) solid; */
+  border:1px rgb(38, 36, 34) solid;
 }
 input{
   height: 30px;

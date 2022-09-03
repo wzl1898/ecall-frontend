@@ -55,7 +55,19 @@ export default {
 
 <template>
   <div class="container">
+    <div class="user_avatar">
+      <img
+        class="avatar"
+        :src="`http://localhost:8080/common/download?name=` + user.avatar"
+        alt=""
+        @click="$router.push('/personal')"
+      />
+    </div>
     <div class="navBar">
+      <div class="navigation" @click="$router.push('/home')">
+        <div style="font-size: 18px">Home</div>
+        <!-- <div style="font-size: 25px; margin-top: -10px">Diary</div> -->
+      </div>
       <div class="navigation" @click="$router.push('/editDiary')">
         <div style="font-size: 17px">
           Anything&nbsp;to&nbsp;talk&nbsp;to&nbsp;us?
@@ -68,7 +80,7 @@ export default {
       </div>
 
       <div class="navigation" @click="$router.push('/analysisCenter')">
-        <div style="font-size: 17px">Analysis&nabla;for&nbsp;me</div>
+        <div style="font-size: 17px">Analysis&nbsp;for&nbsp;me</div>
         <!-- <div style="font-size: 25px; margin-top: -10px">Analyze</div> -->
       </div>
       <div class="navigation" @click="$router.push('/chatList/{}/{}')">
@@ -88,8 +100,8 @@ export default {
           :key="item.id"
         >
           <div class="imgBox">
-            <img class="productPic" src="../assets/1980.jpg" alt="pic" />
-            <!-- <img class="productPic" :src="`http://localhost:8080/common/download?name=` + item.userPtUrl" alt="pic" /> -->
+            <!-- <img class="productPic" src="../assets/1980.jpg" alt="pic" /> -->
+            <img class="productPic" :src="`http://localhost:8080/common/download?name=` + item.avatar" alt="pic" />
           </div>
           <div class="infoBox">
             <div class="productName">{{ item.username }}</div>
@@ -98,7 +110,7 @@ export default {
       </div>
     </div>
 
-    <div class="chatContainer">
+    <div class="chatContainer" v-show="showFlag === true">
       <div class="chatHeader">
         <div class="iconWrap">
           <i class="el-icon-arrow-left" @click="$router.go(-1)"></i>
@@ -139,7 +151,7 @@ export default {
       </div>
     </div>
 
-    <div class="diaryContainer">
+    <div class="diaryContainer" v-show="showFlag === true">
       <div class="anaHeader">
         <div class="anaHeaderText">{{ toUser.username }}</div>
       </div>
@@ -212,6 +224,10 @@ export default {
         </div>
       </div>
     </div>
+    <div class="showIfNotJump" v-show="showFlag === false">
+      <div>no one here to chat&nbsp;...</div>
+      <div>select one on the right</div>
+    </div>
   </div>
 </template>
 
@@ -221,9 +237,10 @@ export default {
   name: "ChatList",
   data() {
     return {
+      showFlag: true,
       toUserList: [],
       toUserNum: 0,
-      inputText: "1",
+      inputText: "",
       toUser: {
         id: "",
         userName: "",
@@ -295,7 +312,7 @@ export default {
         msg: this.inputText,
         // msg: this.inputText,
       };
-      console.log("data:", data);
+      // console.log("data:", data);
       this.inputText = "";
       this.websock.send(JSON.stringify(data));
     },
@@ -305,7 +322,7 @@ export default {
     websocketonmessage: function (e) {
       let data = JSON.parse(e.data);
       this.messages = data.dataList;
-      console.log(data);
+      // console.log(data);
     },
     websocketclose: function (e) {
       console.log("connection closed", e);
@@ -313,15 +330,81 @@ export default {
     },
     changeChat(id) {
       this.toUser.id = id;
+      this.showFlag = true;
       this.$http({
         method: "get",
         url: "/user/" + this.toUser.id,
       }).then((res) => {
-        console.log("/user/", res.data);
+        console.log("changeChat: /user/", res.data);
         this.toUser = res.data.data;
       });
       this.initSocket();
       //get the two diaries
+      this.$http({
+        method: "get",
+        url: "/match/find/" + this.user.id,
+      }).then(
+        res => {
+          if (res.data.code === 1){
+            console.log("find match: ", res.data.data);
+            for (let idx in res.data.data){
+              console.log(res.data.data[idx])
+              console.log("this.user.id:", this.user.id, "/item.userId:", res.data.data[idx].userId, "/this.toUser.id", this.toUser.id, "/item.matchUser", res.data.data[idx].matchUser);
+              if (res.data.data[idx].userId === this.user.id && res.data.data[idx].matchUser === this.toUser.id){
+                console.log("match found")
+                this.$http({
+                  method: "get",
+                  url: "/diary/" + res.data.data[idx].diaryId,
+                }).then(
+                  res => {
+                    if (res.data.code === 1){
+                      this.myDiary = res.data.data;
+                    }
+                  }
+                )
+                this.$http({
+                  method: "get",
+                  url: "/diary/" + res.data.data[idx].matchDiary,
+                }).then(
+                  res => {
+                    if (res.data.code === 1){
+                      this.toUserDiary = res.data.data;
+                    }
+                  }
+                )
+                break;
+              }
+            }
+          }
+        }
+      )
+      // this.$http({
+      //   method: "get",
+      //   url: "/diary/getUserMatch/" + this.toUser.id,
+      // }).then((res) => {
+      //   if (res.data.code === 1){
+      //     for (let item in res.data.data){
+      //       if (item.matchUserId == this.user.id){
+      //         this.toUserDiary = item;
+      //         break;
+      //       }
+      //     }
+      //   }
+      // });
+      // getUserMatch完善后。。。
+      // this.$http({
+      //   method: "get",
+      //   url: "/diary/getUserMatch/" + this.user.id,
+      // }).then((res) => {
+      //   if (res.data.code === 1){
+      //     for (let item in res.data.data){
+      //       if (item.matchUserId == this.user.id){
+      //         this.myDiary = item;
+      //         break;
+      //       }
+      //     }
+      //   }
+      // });
 
     },
   },
@@ -333,7 +416,7 @@ export default {
       method: "get",
       url: "/sse/" + this.user.id + "/target",
     }).then((res) => {
-      console.log(res);
+      // console.log(res);
       this.initUserList();
     });
     // console.log("has this.$route.params.dataStr");
@@ -365,7 +448,7 @@ export default {
         method: "get",
         url: "/user/" + this.sseMessage[i],
       }).then((res) => {
-        console.log("query user:", res.data);
+        console.log("mounted: query user toUserList:", res.data);
         this.toUserList.push(res.data.data);
       });
     }
@@ -384,34 +467,48 @@ export default {
       // });
 
       // this.toUser = {};
-      this.toUser.id = data.matchUserId;
+      // this.toUser.id = data.matchUserId;
       console.log("data.matchUserId: ", data.matchUserId);
 
       this.$http({
         method: "get",
         url: "/user/" + data.matchUserId,
       }).then((res) => {
-        console.log("query user:", res.data);
-        this.toUserList.push(res.data.data);
+        console.log("get matchUser query user:", res.data);
+        let flag = false;
+        for(let idx in this.toUserList){
+          if(this.toUserList[idx].id === res.data.data.id){
+            flag = true;
+            break;
+          }
+        }
+        if (!flag){
+          console.log("push matchUser into toUserList")
+          this.toUserList.push(res.data.data);
+        }
+          
       });
       this.changeChat(data.matchUserId);
       this.myDiary = JSON.parse(this.$route.params.diaryStr);
 
       this.$http({
         method: "get",
-        url: "/diary/getUserMatch/" + data.matchUserId,
+        url: "/diary/" + data.matchDiaryId,
       }).then((res) => {
         if (res.data.code === 1){
-          for (let item in res.data.data){
-            if (item.matchUserId == this.user.id){
-              this.toUserDiary = item;
-              break;
-            }
-          }
+          this.toUserDiary = res.data.data;
+          // this.$set(this.toUserDiary, 'title', res.data.data.title);
+          // this.$set(this.toUserDiary, 'content', res.data.data.content);
+          // this.$set(this.toUserDiary, 'mood', res.data.data.mood);
+          // this.$set(this.toUserDiary, 'createTime', res.data.data.createTime);
+          this.$forceUpdate();
         }
       });
 
 
+    }
+    if (this.toUser.id === null || this.toUser.id === ""){
+      this.showFlag = false;
     }
   },
 };
@@ -432,7 +529,7 @@ a {
 .navBar {
   /* visibility: hidden  ; */
   position: absolute;
-  left: 34%;
+  left: 30%;
   top: 4.4%;
   height: 30px;
   /* width: 500px; */
@@ -450,7 +547,18 @@ a {
 .navigation:hover {
   cursor: pointer;
 }
-
+.user_avatar {
+  position: absolute;
+  left: calc(93% - 2px);
+  top: calc(2% + 2px);
+}
+.avatar {
+  height:80px;
+  width: 80px;
+  /* border: #333 1px solid; */
+  border-radius: 50%;
+  cursor: pointer;
+}
 .textBox {
   /* border: 1px salmon solid; */
   align-self: center;
@@ -552,8 +660,8 @@ a {
   /* border: 1px saddlebrown solid; */
 }
 .infoBox {
-  left: -72%;
-  top: -30%;
+  left: -66%;
+  top: -15%;
   /* border: 1px saddlebrown solid; */
   display: flex;
   align-items: center;
@@ -812,5 +920,14 @@ a {
   font-weight: 600;
   color: rgb(144, 144, 144);
   font-family: "Microsoft YaHei";
+}
+.showIfNotJump{
+  font-size: 30px;
+  font-weight: normal;
+  font-family: 'Microsoft YaHei';
+  position:absolute;
+  top: 40%;
+  left: 20%;
+  color: white;
 }
 </style>

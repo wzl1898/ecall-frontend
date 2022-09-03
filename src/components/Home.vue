@@ -8,6 +8,14 @@
         @click="$router.push('/personal')"
       />
     </div> -->
+    <div class="user_avatar">
+      <img
+        class="avatar"
+        :src="`http://localhost:8080/common/download?name=` + user.avatar"
+        alt=""
+        @click="$router.push('/personal')"
+      />
+    </div>
     <div class="navBar">
 
       <div class="navigation" @click="$router.push('/editDiary')">
@@ -21,7 +29,7 @@
 
       
       <div class="navigation" @click="$router.push('/analysisCenter')">
-        <div style="font-size: 18px">Analysis&nabla;for&nbsp;me</div>
+        <div style="font-size: 18px">Analysis&nbsp;for&nbsp;me</div>
         <!-- <div style="font-size: 25px; margin-top: -10px">Analyze</div> -->
       </div>
       <div class="navigation" @click="$router.push('/chatList/{}/{}')">
@@ -64,7 +72,7 @@ export default {
   width: 100%;
   height: 100%;
   /* background-color: rgb(48, 48, 48); */
-  background: url("../assets/cover-1.png") no-repeat;
+  background: url("../assets/首页1.jpg") no-repeat;
   background-size: 100% 100%;
   display: flex;
   justify-content: center;
@@ -92,6 +100,7 @@ export default {
 .navigation:hover {
   cursor: pointer;
 }
+
 .cards {
   width: 99%;
   height: 200px;
@@ -124,8 +133,8 @@ export default {
 }
 .user_avatar {
   position: absolute;
-  left: calc(93% - 2px);
-  top: calc(5% + 2px);
+  left: calc(92% - 2px);
+  top: calc(2% + 2px);
 }
 .avatar {
   height: 80px;
